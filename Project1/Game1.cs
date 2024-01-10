@@ -10,7 +10,7 @@ using Color = Microsoft.Xna.Framework.Color;
 using Microsoft.VisualBasic;
 using static System.Net.Mime.MediaTypeNames;
 
-namespace Project1
+namespace MonogameGamesSource
 {
     public class Game1 : Game
     {
