@@ -19,7 +19,7 @@ namespace MonogameGamesSource
         {
             private GraphicsDeviceManager _graphics;
             private SpriteBatch _spriteBatch;
-            double updateInterval = 0.0; // Update every 1 second
+            double updateInterval = 1.0; // Update every 1 second
             double timeSinceLastUpdate = 0.0;
 
             SpriteFont font;
@@ -45,7 +45,9 @@ namespace MonogameGamesSource
             protected override void Initialize()
             {
                 // TODO: Add your initialization logic here
-                FillGrid(gridHeight, gridWidth);
+                //FillGrid(gridHeight, gridWidth);
+                FillGridCave(gridHeight, gridWidth, 60);
+                GenerateCave(gridHeight, gridWidth, 6);
 
                 base.Initialize();
             }
@@ -76,7 +78,8 @@ namespace MonogameGamesSource
                 {
 
                     // TODO: Add your update logic here
-                    
+                    FillGridCave(gridHeight, gridWidth, 60);
+                    GenerateCave(gridHeight, gridWidth, 6);
 
                     timeSinceLastUpdate -= updateInterval;
                 }
@@ -135,6 +138,145 @@ namespace MonogameGamesSource
                         else
                         {
                             grid[i][j] = 10;
+                        }
+                    }
+                }
+            }
+
+            public void FillGridCave(int height, int width, int density)
+            {
+                // fill grid with 0
+                grid = new List<List<int>>();
+
+                Random rnd = new Random();
+                int random;
+                for (int y = 0; y < height; y++)
+                {
+                    List<int> row = new List<int>();
+                    for (int x = 0; x < width; x++)
+                    {
+                        random = rnd.Next(0, 100);
+                        if (random < density)
+                        {
+                            row.Add(1);
+                        }
+                        else
+                        {
+                            row.Add(0);
+                        }
+                    }
+                    grid.Add(row);
+                }
+            }
+
+            public void GenerateCave(int height, int width, int iteration)
+            {
+                int neighbours;
+                List<List<int>> newBoard = new List<List<int>>();
+                List<List<int>> neighbourcount = new List<List<int>>();
+
+                // for loop for iterations
+                for (int z = 0; z < iteration; z++)
+                {
+
+                    // fill neighbourcount list with 0
+                    for (int i = 0; i < height; i++)
+                    {
+                        List<int> row = new List<int>();
+                        for (int j = 0; j < width; j++)
+                        {
+                            row.Add(0);
+                        }
+                        neighbourcount.Add(row);
+                    }
+
+                    // fill newBoard with 0
+                    for (int i = 0; i < height; i++)
+                    {
+                        List<int> row = new List<int>();
+                        for (int j = 0; j < width; j++)
+                        {
+                            row.Add(0);
+                        }
+                        newBoard.Add(row);
+                    }
+
+                    // loop through grid and count neighbours
+                    for (int y = 1; y < height - 1; y++)
+                    {
+                        for (int x = 1; x < width - 1; x++)
+                        {
+                            neighbours = 0;
+                            if (grid[y - 1][x - 1] == 1)
+                            {
+                                neighbours++;
+                            }
+                            if (grid[y - 1][x] == 1)
+                            {
+                                neighbours++;
+                            }
+                            if (grid[y - 1][x + 1] == 1)
+                            {
+                                neighbours++;
+                            }
+                            if (grid[y][x - 1] == 1)
+                            {
+                                neighbours++;
+                            }
+                            if (grid[y][x + 1] == 1)
+                            {
+                                neighbours++;
+                            }
+                            if (grid[y + 1][x - 1] == 1)
+                            {
+                                neighbours++;
+                            }
+                            if (grid[y + 1][x] == 1)
+                            {
+                                neighbours++;
+                            }
+                            if (grid[y + 1][x + 1] == 1)
+                            {
+                                neighbours++;
+                            }
+                            neighbourcount[y][x] = neighbours;
+                        }
+                    }
+
+                    // loop through neighbourcount and apply rules
+                    for (int y = 1; y < height - 1; y++)
+                    {
+                        for (int x = 1; x < width - 1; x++)
+                        {
+                            if (neighbourcount[y][x] >= 5)
+                            {
+                                newBoard[y][x] = 1;
+                            }
+                            else if (neighbourcount[y][x] <= 4)
+                            {
+                                newBoard[y][x] = 0;
+                            }
+                        }
+                    }
+
+                    // copy newBoard to grid
+                    for (int y = 1; y < height - 1; y++)
+                    {
+                        for (int x = 1; x < width - 1; x++)
+                        {
+                            grid[y][x] = newBoard[y][x];
+                        }
+                    }
+                }
+
+                // all edges are walls
+                for (int y = 0; y < height; y++)
+                {
+                    for (int x = 0; x < width; x++)
+                    {
+                        if ((y == 0) || (x == 0) || (y == (height - 1)) || (x == (width - 1)))
+                        {
+                            grid[y][x] = 10;
                         }
                     }
                 }
