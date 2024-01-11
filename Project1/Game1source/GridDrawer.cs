@@ -5,239 +5,237 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 
-public class GridDrawer
+namespace MonogameGamesSource.Game1source
 {
-    private Texture2D pixel;
-    private GraphicsDevice graphicsDevice;
-
-    public GridDrawer(GraphicsDevice graphicsDevice)
+    public class GridDrawer
     {
-        this.graphicsDevice = graphicsDevice;
-        pixel = new Texture2D(graphicsDevice, 1, 1);
-        pixel.SetData(new[] { Color.White });
-    }
+        private Texture2D pixel;
+        private GraphicsDevice graphicsDevice;
 
-    public void Draw(SpriteBatch spriteBatch, List<List<int>> grid, int cellSize)
-    {
-        for (int y = 0; y < grid.Count; y++)
+        public GridDrawer(GraphicsDevice graphicsDevice)
         {
-            for (int x = 0; x < grid[y].Count; x++)
-            {
-                var position = new Vector2(x * cellSize, y * cellSize);
-                var rectangle = new Rectangle((int)position.X, (int)position.Y + 20, cellSize, cellSize);
-                if (grid[y][x] == 0)
-                {
-                    spriteBatch.Draw(pixel, rectangle, Color.Black);
-                }
-                else if (grid[y][x] == 1)
-                {
-                    spriteBatch.Draw(pixel, rectangle, Color.White);
-                }
-                /*spriteBatch.Draw(pixel, new Rectangle(rectangle.X, rectangle.Y, 1, rectangle.Height), Color.DarkGray);
-                spriteBatch.Draw(pixel, new Rectangle(rectangle.X, rectangle.Y, rectangle.Width, 1), Color.DarkGray);
-                spriteBatch.Draw(pixel, new Rectangle(rectangle.X + rectangle.Width - 1, rectangle.Y, 1, rectangle.Height), Color.DarkGray);
-                spriteBatch.Draw(pixel, new Rectangle(rectangle.X, rectangle.Y + rectangle.Height - 1, rectangle.Width, 1), Color.DarkGray);
-                */
-            }
-        }
-    }
-
-    public void UpdateBoard(List<List<int>> boardlist, int height, int width)
-    {
-        int neighbours;
-        List<List<int>> newBoard = new List<List<int>>();
-        List<List<int>> neighbourcount = new List<List<int>>();
-
-        // fill neighbourcount list with 0
-        for (int i = 0; i < height; i++)
-        {
-            List<int> row = new List<int>();
-            for (int j = 0; j < width; j++)
-            {
-                row.Add(0);
-            }
-            neighbourcount.Add(row);
+            this.graphicsDevice = graphicsDevice;
+            pixel = new Texture2D(graphicsDevice, 1, 1);
+            pixel.SetData(new[] { Color.White });
         }
 
-        // fill newBoard with 0
-        for (int i = 0; i < height; i++)
+        public void Draw(SpriteBatch spriteBatch, List<List<int>> grid, int cellSize)
         {
-            List<int> row = new List<int>();
-            for (int j = 0; j < width; j++)
+            for (int y = 0; y < grid.Count; y++)
             {
-                row.Add(0);
-            }
-            newBoard.Add(row);
-        }
-
-        for (int i = 0; i < height; i++)
-        {
-            for (int j = 0; j < width; j++)
-            {
-                neighbours = 0;
-                if ((i == 0) && (j == 0))
+                for (int x = 0; x < grid[y].Count; x++)
                 {
-                    if (boardlist[i + 1][j] == 1)
-                    { neighbours++; }
-                    if (boardlist[i][j + 1] == 1)
-                    { neighbours++; }
-                    if (boardlist[i + 1][j + 1] == 1)
-                    { neighbours++; }
-
-                    neighbourcount[i][j] = neighbours;
-                }
-                else if ((i == (height - 1)) && (j == 0))
-                {
-                    if (boardlist[i - 1][j] == 1)
-                    { neighbours++; }
-                    if (boardlist[i][j + 1] == 1)
-                    { neighbours++; }
-                    if (boardlist[i - 1][j + 1] == 1)
-                    { neighbours++; }
-
-                    neighbourcount[i][j] = neighbours;
-                }
-                else if ((i == (height - 1)) && (j == (width - 1)))
-                {
-                    if (boardlist[i - 1][j] == 1)
-                    { neighbours++; }
-                    if (boardlist[i][j - 1] == 1)
-                    { neighbours++; }
-                    if (boardlist[i - 1][j - 1] == 1)
-                    { neighbours++; }
-
-                    neighbourcount[i][j] = neighbours;
-                }
-                else if ((i == 0) && (j == (width - 1)))
-                {
-                    if (boardlist[i + 1][j] == 1)
-                    { neighbours++; }
-                    if (boardlist[i][j - 1] == 1)
-                    { neighbours++; }
-                    if (boardlist[i + 1][j - 1] == 1)
-                    { neighbours++; }
-
-                    neighbourcount[i][j] = neighbours;
-                }
-                else if ((i != 0) && (i != (height - 1)) && (j == 0))
-                {
-                    if (boardlist[i - 1][j] == 1)
-                    { neighbours++; }
-                    if (boardlist[i - 1][j + 1] == 1)
-                    { neighbours++; }
-                    if (boardlist[i][j + 1] == 1)
-                    { neighbours++; }
-                    if (boardlist[i + 1][j + 1] == 1)
-                    { neighbours++; }
-                    if (boardlist[i + 1][j] == 1)
-                    { neighbours++; }
-
-                    neighbourcount[i][j] = neighbours;
-                }
-                else if ((i == (height - 1)) && (j != 0) && (j != (width - 1)))
-                {
-                    if (boardlist[i][j - 1] == 1)
-                    { neighbours++; }
-                    if (boardlist[i - 1][j - 1] == 1)
-                    { neighbours++; }
-                    if (boardlist[i - 1][j] == 1)
-                    { neighbours++; }
-                    if (boardlist[i - 1][j + 1] == 1)
-                    { neighbours++; }
-                    if (boardlist[i][j + 1] == 1)
-                    { neighbours++; }
-
-                    neighbourcount[i][j] = neighbours;
-                }
-                else if ((i != 0) && (i != (height - 1)) && (j == (width - 1)))
-                {
-                    if (boardlist[i + 1][j] == 1)
-                    { neighbours++; }
-                    if (boardlist[i + 1][j - 1] == 1)
-                    { neighbours++; }
-                    if (boardlist[i][j - 1] == 1)
-                    { neighbours++; }
-                    if (boardlist[i - 1][j - 1] == 1)
-                    { neighbours++; }
-                    if (boardlist[i - 1][j] == 1)
-                    { neighbours++; }
-
-                    neighbourcount[i][j] = neighbours;
-                }
-                else if ((i == 0) && (j != 0) && (j != (width - 1)))
-                {
-                    if (boardlist[i][j - 1] == 1)
-                    { neighbours++; }
-                    if (boardlist[i + 1][j - 1] == 1)
-                    { neighbours++; }
-                    if (boardlist[i + 1][j] == 1)
-                    { neighbours++; }
-                    if (boardlist[i + 1][j + 1] == 1)
-                    { neighbours++; }
-                    if (boardlist[i][j + 1] == 1)
-                    { neighbours++; }
-
-                    neighbourcount[i][j] = neighbours;
-                }
-                else
-                {
-                    if (boardlist[i][j - 1] == 1)
-                    { neighbours++; }
-                    if (boardlist[i + 1][j - 1] == 1)
-                    { neighbours++; }
-                    if (boardlist[i + 1][j] == 1)
-                    { neighbours++; }
-                    if (boardlist[i + 1][j + 1] == 1)
-                    { neighbours++; }
-                    if (boardlist[i][j + 1] == 1)
-                    { neighbours++; }
-                    if (boardlist[i - 1][j + 1] == 1)
-                    { neighbours++; }
-                    if (boardlist[i - 1][j] == 1)
-                    { neighbours++; }
-                    if (boardlist[i - 1][j - 1] == 1)
-                    { neighbours++; }
-
-                    neighbourcount[i][j] = neighbours;
+                    var position = new Vector2(x * cellSize, y * cellSize);
+                    var rectangle = new Rectangle((int)position.X, (int)position.Y + 20, cellSize, cellSize);
+                    if (grid[y][x] == 0)
+                    {
+                        spriteBatch.Draw(pixel, rectangle, Color.Black);
+                    }
+                    else if (grid[y][x] == 1)
+                    {
+                        spriteBatch.Draw(pixel, rectangle, Color.White);
+                    }
                 }
             }
         }
 
-        for (int i = 0; i < height; i++)
+        public void UpdateBoard(List<List<int>> boardlist, int height, int width)
         {
-            for (int j = 0; j < width; j++)
-            {
-                if ((boardlist[i][j] == 0) && (neighbourcount[i][j] == 3))
-                {
-                    newBoard[i][j] = 1;
-                }
-                else if ((boardlist[i][j] == 1) && (neighbourcount[i][j] < 2))
-                {
-                    newBoard[i][j] = 0;
-                }
-                else if ((boardlist[i][j] == 1) && ((neighbourcount[i][j] == 2) || (neighbourcount[i][j] == 3)))
-                {
-                    newBoard[i][j] = 1;
-                }
-                else if ((boardlist[i][j] == 1) && (neighbourcount[i][j] > 3))
-                {
-                    newBoard[i][j] = 0;
-                }
-                else
-                {
-                    newBoard[i][j] = boardlist[i][j];
-                }
+            int neighbours;
+            List<List<int>> newBoard = new List<List<int>>();
+            List<List<int>> neighbourcount = new List<List<int>>();
 
-                
+            // fill neighbourcount list with 0
+            for (int i = 0; i < height; i++)
+            {
+                List<int> row = new List<int>();
+                for (int j = 0; j < width; j++)
+                {
+                    row.Add(0);
+                }
+                neighbourcount.Add(row);
             }
-        }
 
-        // replace boardlist with newboard and clear newboard
-        for (int i = 0; i < height; i++)
-        {
-            for (int j = 0; j < width; j++)
+            // fill newBoard with 0
+            for (int i = 0; i < height; i++)
             {
-                boardlist[i][j] = newBoard[i][j];
+                List<int> row = new List<int>();
+                for (int j = 0; j < width; j++)
+                {
+                    row.Add(0);
+                }
+                newBoard.Add(row);
+            }
+
+            for (int i = 0; i < height; i++)
+            {
+                for (int j = 0; j < width; j++)
+                {
+                    neighbours = 0;
+                    if ((i == 0) && (j == 0))
+                    {
+                        if (boardlist[i + 1][j] == 1)
+                        { neighbours++; }
+                        if (boardlist[i][j + 1] == 1)
+                        { neighbours++; }
+                        if (boardlist[i + 1][j + 1] == 1)
+                        { neighbours++; }
+
+                        neighbourcount[i][j] = neighbours;
+                    }
+                    else if ((i == (height - 1)) && (j == 0))
+                    {
+                        if (boardlist[i - 1][j] == 1)
+                        { neighbours++; }
+                        if (boardlist[i][j + 1] == 1)
+                        { neighbours++; }
+                        if (boardlist[i - 1][j + 1] == 1)
+                        { neighbours++; }
+
+                        neighbourcount[i][j] = neighbours;
+                    }
+                    else if ((i == (height - 1)) && (j == (width - 1)))
+                    {
+                        if (boardlist[i - 1][j] == 1)
+                        { neighbours++; }
+                        if (boardlist[i][j - 1] == 1)
+                        { neighbours++; }
+                        if (boardlist[i - 1][j - 1] == 1)
+                        { neighbours++; }
+
+                        neighbourcount[i][j] = neighbours;
+                    }
+                    else if ((i == 0) && (j == (width - 1)))
+                    {
+                        if (boardlist[i + 1][j] == 1)
+                        { neighbours++; }
+                        if (boardlist[i][j - 1] == 1)
+                        { neighbours++; }
+                        if (boardlist[i + 1][j - 1] == 1)
+                        { neighbours++; }
+
+                        neighbourcount[i][j] = neighbours;
+                    }
+                    else if ((i != 0) && (i != (height - 1)) && (j == 0))
+                    {
+                        if (boardlist[i - 1][j] == 1)
+                        { neighbours++; }
+                        if (boardlist[i - 1][j + 1] == 1)
+                        { neighbours++; }
+                        if (boardlist[i][j + 1] == 1)
+                        { neighbours++; }
+                        if (boardlist[i + 1][j + 1] == 1)
+                        { neighbours++; }
+                        if (boardlist[i + 1][j] == 1)
+                        { neighbours++; }
+
+                        neighbourcount[i][j] = neighbours;
+                    }
+                    else if ((i == (height - 1)) && (j != 0) && (j != (width - 1)))
+                    {
+                        if (boardlist[i][j - 1] == 1)
+                        { neighbours++; }
+                        if (boardlist[i - 1][j - 1] == 1)
+                        { neighbours++; }
+                        if (boardlist[i - 1][j] == 1)
+                        { neighbours++; }
+                        if (boardlist[i - 1][j + 1] == 1)
+                        { neighbours++; }
+                        if (boardlist[i][j + 1] == 1)
+                        { neighbours++; }
+
+                        neighbourcount[i][j] = neighbours;
+                    }
+                    else if ((i != 0) && (i != (height - 1)) && (j == (width - 1)))
+                    {
+                        if (boardlist[i + 1][j] == 1)
+                        { neighbours++; }
+                        if (boardlist[i + 1][j - 1] == 1)
+                        { neighbours++; }
+                        if (boardlist[i][j - 1] == 1)
+                        { neighbours++; }
+                        if (boardlist[i - 1][j - 1] == 1)
+                        { neighbours++; }
+                        if (boardlist[i - 1][j] == 1)
+                        { neighbours++; }
+
+                        neighbourcount[i][j] = neighbours;
+                    }
+                    else if ((i == 0) && (j != 0) && (j != (width - 1)))
+                    {
+                        if (boardlist[i][j - 1] == 1)
+                        { neighbours++; }
+                        if (boardlist[i + 1][j - 1] == 1)
+                        { neighbours++; }
+                        if (boardlist[i + 1][j] == 1)
+                        { neighbours++; }
+                        if (boardlist[i + 1][j + 1] == 1)
+                        { neighbours++; }
+                        if (boardlist[i][j + 1] == 1)
+                        { neighbours++; }
+
+                        neighbourcount[i][j] = neighbours;
+                    }
+                    else
+                    {
+                        if (boardlist[i][j - 1] == 1)
+                        { neighbours++; }
+                        if (boardlist[i + 1][j - 1] == 1)
+                        { neighbours++; }
+                        if (boardlist[i + 1][j] == 1)
+                        { neighbours++; }
+                        if (boardlist[i + 1][j + 1] == 1)
+                        { neighbours++; }
+                        if (boardlist[i][j + 1] == 1)
+                        { neighbours++; }
+                        if (boardlist[i - 1][j + 1] == 1)
+                        { neighbours++; }
+                        if (boardlist[i - 1][j] == 1)
+                        { neighbours++; }
+                        if (boardlist[i - 1][j - 1] == 1)
+                        { neighbours++; }
+
+                        neighbourcount[i][j] = neighbours;
+                    }
+                }
+            }
+
+            for (int i = 0; i < height; i++)
+            {
+                for (int j = 0; j < width; j++)
+                {
+                    if ((boardlist[i][j] == 0) && (neighbourcount[i][j] == 3))
+                    {
+                        newBoard[i][j] = 1;
+                    }
+                    else if ((boardlist[i][j] == 1) && (neighbourcount[i][j] < 2))
+                    {
+                        newBoard[i][j] = 0;
+                    }
+                    else if ((boardlist[i][j] == 1) && ((neighbourcount[i][j] == 2) || (neighbourcount[i][j] == 3)))
+                    {
+                        newBoard[i][j] = 1;
+                    }
+                    else if ((boardlist[i][j] == 1) && (neighbourcount[i][j] > 3))
+                    {
+                        newBoard[i][j] = 0;
+                    }
+                    else
+                    {
+                        newBoard[i][j] = boardlist[i][j];
+                    }
+
+
+                }
+            }
+
+            // replace boardlist with newboard and clear newboard
+            for (int i = 0; i < height; i++)
+            {
+                for (int j = 0; j < width; j++)
+                {
+                    boardlist[i][j] = newBoard[i][j];
+                }
             }
         }
     }

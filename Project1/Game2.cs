@@ -9,33 +9,33 @@ using System.Drawing;
 using Color = Microsoft.Xna.Framework.Color;
 using Microsoft.VisualBasic;
 using static System.Net.Mime.MediaTypeNames;
-using MonogameGamesSource.Game1source;
+using MonogameGamesSource.Game2source;
 
 namespace MonogameGamesSource
 {
-    namespace Game1
+    namespace Game2
     {
-        public class Game1 : Game
+        public class Game2 : Game
         {
             private GraphicsDeviceManager _graphics;
             private SpriteBatch _spriteBatch;
-            GridDrawer gridDrawer;
-            List<List<int>> grid;
-            int gridHeight = 50;
-            int gridWidth = 100;
             double updateInterval = 0.0; // Update every 1 second
             double timeSinceLastUpdate = 0.0;
 
             SpriteFont font;
-            string text = "Generation: ";
-            int generation = 0;
+            string text = "Welcome: ";
             Vector2 position = new Vector2(0, 0);
 
-            public Game1()
+            GridDrawer gridDrawer;
+            List<List<int>> grid;
+            int gridHeight = 70;
+            int gridWidth = 150;
+
+            public Game2()
             {
                 _graphics = new GraphicsDeviceManager(this);
-                _graphics.PreferredBackBufferWidth = 1000;  // set this to the desired width
-                _graphics.PreferredBackBufferHeight = 520; // set this to the desired height
+                _graphics.PreferredBackBufferWidth = 1500;  // set this to the desired width
+                _graphics.PreferredBackBufferHeight = 720; // set this to the desired height
                 _graphics.ApplyChanges();
                 Content.RootDirectory = "Content";
                 IsMouseVisible = true;
@@ -68,9 +68,7 @@ namespace MonogameGamesSource
 
                 if (Keyboard.GetState().IsKeyDown(Keys.Space))
                 {
-                    grid.Clear();
-                    FillGrid(gridHeight, gridWidth);
-                    generation = 0;
+                    
                 }
 
                 timeSinceLastUpdate += gameTime.ElapsedGameTime.TotalSeconds;
@@ -78,8 +76,7 @@ namespace MonogameGamesSource
                 {
 
                     // TODO: Add your update logic here
-                    gridDrawer.UpdateBoard(grid, gridHeight, gridWidth);
-                    generation++;
+                    
 
                     timeSinceLastUpdate -= updateInterval;
                 }
@@ -95,7 +92,7 @@ namespace MonogameGamesSource
                 // TODO: Add your drawing code here
                 _spriteBatch.Begin();
 
-                _spriteBatch.DrawString(font, (text + generation), position, Color.Blue);
+                _spriteBatch.DrawString(font, text, position, Color.Blue);
                 gridDrawer.Draw(_spriteBatch, grid, 10);
 
                 _spriteBatch.End();
@@ -106,22 +103,40 @@ namespace MonogameGamesSource
             public void FillGrid(int height, int width)
             {
                 Random rnd = new Random();
+                grid = new List<List<int>>();
                 for (int i = 0; i < height; i++)
                 {
-                    List<int> row = new List<int>();
+                    grid.Add(new List<int>());
                     for (int j = 0; j < width; j++)
                     {
-                        // 33.33% chance of being alive
-                        if (rnd.Next(0, 3) == 0)
+                        grid[i].Add(0); // Initialize all elements to 0
+                    }
+                }
+
+                for (int i = 0; i < height; i++)
+                {
+                    for (int j = 0; j < width; j++)
+                    {
+                        if ((i == 0) || (j == 0) || (i == (height - 1)) || (j == (width - 1)))
                         {
-                            row.Add(1);
+                            grid[i][j] = 3;
+                        }
+                        else if (((i % 2) == 0) || ((j % 2) == 0))
+                        {
+                            if (rnd.Next(0, 2) == 0)
+                            {
+                                grid[i][j] = rnd.Next(4, 10);
+                            }
+                            else if (rnd.Next(0, 2) == 1)
+                            {
+                                grid[i][j] =rnd.Next(0, 3);
+                            }
                         }
                         else
                         {
-                            row.Add(0);
+                            grid[i][j] = 10;
                         }
                     }
-                    grid.Add(row);
                 }
             }
         }
